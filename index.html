@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيد ميلاد سعيد - بابا حسام</title>
+    
+    <!-- Preload Critical Image for Speed -->
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Canvas Confetti for Sparkles -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Amiri:ital,wght@1,700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            overflow-x: hidden;
+            background-color: #0f172a;
+        }
+
+        /* Background Setup */
+        .bg-image {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg');
+            background-size: cover; background-position: center; z-index: -1;
+        }
+
+        /* Entrance Overlay Background */
+        #entrance-overlay.bg-image-overlay {
+            background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg');
+            background-size: cover; background-position: center;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        /* Glass Card Base */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.60);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(192, 150, 65, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Name Badge Style (Modified slightly for brightness) */
+        .name-badge {
+            background: rgba(0, 0, 0, 0.75); /* Darker background for contrast */
+            backdrop-filter: blur(4px);
+            border: 2px solid #daa520;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 10px 30px;
+            display: inline-block;
+        }
+
+        .golden-text {
+            /* Brighter Gold Gradient */
+            background: linear-gradient(to bottom, #ffd700 22%, #ffa500 50%, #ffd700 78%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            color: #fff; 
+            font-family: 'Amiri', serif;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,1)); /* Stronger shadow */
+        }
+
+        .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
+
+        .btn-gold {
+            background: linear-gradient(45deg, #daa520, #ffd700, #daa520);
+            color: #1a1a1a; transition: transform 0.2s; border: none;
+        }
+        .btn-gold:active { transform: scale(0.95); }
+
+        /* --- NEW CARDS STYLES --- */
+        .gift-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(218, 165, 32, 0.4);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .gift-card:hover { border-color: #ffd700; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+
+        /* Certificate Style */
+        .certificate-border {
+            border: 4px double #daa520;
+            background: #fffaf0;
+            color: #1a1a1a; position: relative; padding: 20px;
+        }
+        .certificate-corner {
+            position: absolute; width: 30px; height: 30px;
+            border-top: 4px solid #daa520; border-left: 4px solid #daa520;
+            top: 5px; left: 5px;
+        }
+        .c-tr { top: 5px; right: 5px; transform: rotate(90deg); }
+        .c-br { bottom: 5px; right: 5px; transform: rotate(180deg); }
+        .c-bl { bottom: 5px; left: 5px; transform: rotate(270deg); }
+
+        /* Modal Animation */
+        .modal-fade { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center relative">
+
+    <!-- Background Layer -->
+    <div class="bg-image"></div>
+
+    <!-- Entrance Overlay -->
+    <div id="entrance-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-1000 bg-image-overlay px-4">
+        <div class="absolute inset-0 bg-black/30"></div> 
+        <div class="text-center w-full max-w-md relative z-50">
+            <div class="mb-4 md:mb-6 text-5xl md:text-6xl animate-bounce">🎂</div>
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 md:mb-8 text-yellow-400 font-serif text-shadow leading-tight">عيد ميلاد الأب الغالي</h1>
+            <button onclick="startParty()" class="btn-gold font-bold py-3 px-8 md:py-4 md:px-12 rounded-full text-lg md:text-xl shadow-xl animate-pulse cursor-pointer w-full md:w-auto">
+                اضغط هنا للاحتفال
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container mx-auto px-4 py-4 md:py-8 hidden opacity-0 transition-opacity duration-1000 ease-in max-w-5xl relative z-10 pb-16">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-8 md:mb-12 mt-2 md:mt-4 relative z-10">
+            <div class="mb-4 animate-float">
+                <div class="name-badge transform hover:scale-105 transition-transform duration-300">
+                    <h2 class="text-4xl md:text-6xl font-bold golden-text tracking-wider leading-tight">
+                        بابا حسام
+                    </h2>
+                </div>
+            </div>
+            <h1 class="text-xl md:text-4xl font-bold text-white mb-1 md:mb-2 font-serif text-shadow">
+                كل سنة وأنت طيب
+            </h1>
+            <p class="text-yellow-200 text-base md:text-lg font-bold text-shadow">يا عمود البيت ونور حياتنا</p>
+        </header>
+
+        <!-- Original Content Grid (Video & Text) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center relative z-10 mb-12">
+            
+            <!-- Video Section -->
+            <div class="order-2 md:order-1">
+                <div class="glass-card p-1 md:p-2 rounded-xl">
+                    <div class="relative rounded-lg overflow-hidden shadow-2xl bg-black border border-yellow-900/50 aspect-video">
+                        <video id="birthdayVideo" class="w-full h-full object-cover" loop playsinline controls preload="metadata">
+                            <source src="https://raw.githubusercontent.com/shehabt1000-boop/hossam/0876c5255899801c21bb1e9fcf51fe74552dd602/3821c986471d5e87da4ff2bd168dfb9a.mp4" type="video/mp4">
+                            متصفحك لا يدعم تشغيل الفيديو.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text/Wishes Section -->
+            <div class="order-1 md:order-2 text-center md:text-right space-y-4 md:space-y-6">
+                <div class="glass-card p-5 md:p-8 rounded-xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
+                    <p class="text-base md:text-xl leading-loose text-gray-100 font-serif drop-shadow-md font-medium">
+                        إلى أغلى أب في الدنيا،
+                        <br><br class="hidden md:block">
+                        وجودك هو الأمان، وضحكتك هي الفرحة لبيتنا. شكراً لكل لحظة تعب وعطاء قدمتها لنا.
+                        <br>
+                        ربنا يبارك في عمرك وصحتك، وتفضل دايماً منور حياتنا يا أحن أب.
+                    </p>
+                </div>
+                <!-- Signatures -->
+                <div class="mt-6 md:mt-8 pt-4 md:pt-6">
+                    <p class="text-base md:text-lg text-yellow-400 mb-3 md:mb-4 font-bold text-shadow">بكل حب، عائلتك:</p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-2 md:gap-3">
+                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">آية</span>
+                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">ريم</span>
+                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">أحمد</span>
+                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">زوجتك المحبة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: The 3 Interactive Cards Grid (At the Bottom) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-8">
+            <!-- Card 1 -->
+            <div onclick="openModal(1)" class="gift-card p-6 rounded-xl text-center group">
+                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">❤️</div>
+                <h3 class="text-xl font-bold text-yellow-400 mb-1">كلمة من القلب</h3>
+                <p class="text-xs text-gray-300">اضغط هنا</p>
+            </div>
+            <!-- Card 2 -->
+            <div onclick="openModal(2)" class="gift-card p-6 rounded-xl text-center group">
+                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🌟</div>
+                <h3 class="text-xl font-bold text-yellow-400 mb-1">رسالة شكر</h3>
+                <p class="text-xs text-gray-300">اضغط هنا</p>
+            </div>
+            <!-- Card 3 (Certificate) -->
+            <div onclick="openModal(3)" class="gift-card p-6 rounded-xl text-center group border-yellow-500 bg-yellow-900/30">
+                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🏆</div>
+                <h3 class="text-xl font-bold text-yellow-400 mb-1">شهادة تقدير</h3>
+                <p class="text-xs text-yellow-200">خاصة جداً من العائلة</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Popup Container -->
+    <div id="msg-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div id="modal-content-box" class="relative z-[101] max-w-lg w-full modal-fade">
+            <!-- Content will be injected here -->
+        </div>
+    </div>
+    
+    <script>
+        // Content for Modals
+        const contentData = {
+            1: `
+                <div class="bg-gray-900 border border-yellow-600 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden">
+                    <div class="text-yellow-500 text-5xl mb-4">❤️</div>
+                    <h3 class="text-2xl font-bold text-white mb-4 font-serif">إلى أبي الحبيب</h3>
+                    <p class="text-gray-200 text-lg leading-loose">
+                        يا من علمتنا معنى القوة والحنان في آن واحد.<br>
+                        أنت لست مجرد أب، أنت الصديق والمرشد.<br>
+                        وجودك في حياتنا هو النعمة التي نشكر الله عليها كل يوم.
+                    </p>
+                    <button onclick="closeModal()" class="mt-6 text-yellow-500 hover:text-white underline font-bold">إغلاق</button>
+                </div>
+            `,
+            2: `
+                <div class="bg-gray-900 border border-yellow-600 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden">
+                    <div class="text-yellow-500 text-5xl mb-4">✨</div>
+                    <h3 class="text-2xl font-bold text-white mb-4 font-serif">شكراً لك</h3>
+                    <p class="text-gray-200 text-lg leading-loose">
+                        شكراً لكل قطرة عرق، وكل لحظة سهر.<br>
+                        شكراً لأنك تفني عمرك لترانا سعداء.<br>
+                        كلمات الدنيا لا توفيك حقك يا "بابا حسام".
+                    </p>
+                    <button onclick="closeModal()" class="mt-6 text-yellow-500 hover:text-white underline font-bold">إغلاق</button>
+                </div>
+            `,
+            3: `
+                <div class="certificate-border shadow-2xl mx-auto transform rotate-1 md:rotate-0 bg-white">
+                    <div class="certificate-corner"></div>
+                    <div class="certificate-corner c-tr"></div>
+                    <div class="certificate-corner c-br"></div>
+                    <div class="certificate-corner c-bl"></div>
+
+                    <div class="text-center py-4 px-2 border-2 border-dashed border-yellow-600/30 m-2">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-yellow-600">
+                            <span class="text-3xl">👑</span>
+                        </div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-yellow-800 font-serif mb-2">شهادة تقدير وعرفان</h2>
+                        <p class="text-gray-500 text-sm mb-6">مقدمة من العائلة الكريمة</p>
+                        
+                        <p class="text-lg md:text-xl font-bold text-gray-800 leading-loose mb-6 font-serif">
+                            نتشرف نحن (آية، ريم، أحمد، وماما)<br>
+                            بمنح هذه الشهادة إلى<br>
+                            <span class="text-2xl text-yellow-700 block mt-2 mb-2">"الأستاذ حسام"</span>
+                            باعتباره <span class="text-red-600">أفضل أب في العالم</span> لهذا العام وكل عام.<br>
+                            تقديراً لعطائه اللامحدود وحبه الكبير.
+                        </p>
+
+                        <div class="flex justify-around mt-8 pt-4 border-t border-gray-300">
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500">التاريخ</p>
+                                <p class="font-bold text-gray-700">عيد ميلادك</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500">التوقيع</p>
+                                <p class="font-bold text-gray-700 font-serif text-lg">عائلتك المحبة</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="block w-full mt-2 text-center text-yellow-800 text-sm hover:font-bold">إغلاق الشهادة</button>
+                </div>
+            `
+        };
+
+        function openModal(id) {
+            const modal = document.getElementById('msg-modal');
+            const contentBox = document.getElementById('modal-content-box');
+            contentBox.innerHTML = contentData[id];
+            modal.classList.remove('hidden');
+            if(id === 3) {
+                confetti({
+                    particleCount: 100, spread: 70, origin: { y: 0.6 },
+                    colors: ['#FFD700', '#daa520']
+                });
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('msg-modal').classList.add('hidden');
+        }
+
+        const isMobile = window.innerWidth < 768;
+        const particleCountBase = isMobile ? 30 : 60;
+
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100, disableForReducedMotion: true };
+
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = particleCountBase * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#FFD700', '#FFA500', '#ffffff']
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#FFD700', '#C0C0C0', '#ffffff']
+                }));
+            }, 250);
+        }
+
+        function startParty() {
+            const overlay = document.getElementById('entrance-overlay');
+            const mainContent = document.getElementById('main-content');
+            const video = document.getElementById('birthdayVideo');
+            const btn = document.querySelector('#entrance-overlay button');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'جاري التحميل...';
+
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                mainContent.style.display = 'block';
+                void mainContent.offsetWidth; 
+                mainContent.style.opacity = '1';
+                video.play().catch(e => { console.log("Auto-play prevented."); });
+                fireConfetti();
+                setInterval(() => {
+                    if (document.hidden) return;
+                    confetti({
+                        particleCount: isMobile ? 40 : 80, spread: 80, origin: { y: 0.6 },
+                        colors: ['#FFD700', '#ffffff'], zIndex: 100, disableForReducedMotion: true
+                    });
+                }, 5000);
+            }, 800);
+        }
+    </script>
+</body>
+</html>
+
