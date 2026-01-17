@@ -2,107 +2,88 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <!-- منع التكبير العرضي وثبات العرض على الموبايل -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>عيد ميلاد سعيد - بابا حسام</title>
     
-    <!-- 
-      تحسين سرعة التحميل:
-      نقوم بإخبار المتصفح بتحميل الصورة والفيديو فوراً بأعلى أولوية
-    -->
+    <!-- التحميل المسبق للملفات الثقيلة لسرعة الفتح -->
     <link rel="preload" as="image" href="https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg">
     <link rel="preload" as="video" href="https://raw.githubusercontent.com/shehabt1000-boop/hossam/0876c5255899801c21bb1e9fcf51fe74552dd602/3821c986471d5e87da4ff2bd168dfb9a.mp4">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Canvas Confetti -->
+    <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    <!-- Google Fonts -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Amiri:ital,wght@1,700&display=swap" rel="stylesheet">
 
     <style>
-        /* إعدادات الخط */
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #0f172a;
             margin: 0;
             padding: 0;
-            /* منع الارتداد في التمرير */
-            overscroll-behavior-y: none; 
+            overflow-x: hidden;
+            background-color: #0f172a;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* إصلاح الخلفية المتحركة:
-           استخدام fixed مع 100dvh يضمن ثبات الخلفية خلف شريط المتصفح
-           transform: translateZ(0) يفعل تسريع الهاردوير
+        /* الحل الجذري لمشكلة الخلفية:
+           فصل الخلفية في عنصر مستقل تماماً عن المحتوى 
+           واستخدام translate3d لتسريع الأداء (GPU Acceleration)
         */
-        .bg-image {
+        #fixed-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
-            height: 100vh; /* Fallback للمتصفحات القديمة */
-            height: 100dvh; /* يحل مشكلة شريط العنوان في الموبايل */
+            height: 100vh;
             background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg');
             background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
+            background-position: center;
             z-index: -10;
-            will-change: transform; /* تحسين الأداء */
+            /* هذا السطر يمنع إعادة رسم الخلفية عند التمرير */
+            will-change: transform;
             transform: translateZ(0);
         }
 
-        /* Overlay يعطي تعتيم خفيف للخلفية لقراءة الكلام */
-        .bg-overlay {
+        /* طبقة تعتيم خفيفة فوق الخلفية */
+        #bg-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* تعتيم متوسط */
             z-index: -9;
         }
 
-        /* Entrance Overlay Background */
-        #entrance-overlay.bg-image-overlay {
-            background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg');
-            background-size: cover; background-position: center;
-        }
-
-        /* Animations */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-
-        /* Glass Card Base */
+        /* تنسيقات التصميم الأصلي */
         .glass-card {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px); /* Safari support */
-            border: 1px solid rgba(218, 165, 32, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background: rgba(15, 23, 42, 0.75); /* زيادة العتامة قليلاً للأداء */
+            /* تقليل الـ blur لتقليل التهنيج */
+            backdrop-filter: blur(5px); 
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(192, 150, 65, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
         }
 
         .name-badge {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(4px);
             border: 2px solid #daa520;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             border-radius: 12px;
             padding: 10px 30px;
             display: inline-block;
         }
 
         .golden-text {
-            background: linear-gradient(to bottom, #ffd700 20%, #ffa500 50%, #ffd700 80%); 
+            background: linear-gradient(to bottom, #ffd700 22%, #ffa500 50%, #ffd700 78%); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
             color: #fff; 
             font-family: 'Amiri', serif;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,1));
         }
 
         .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
@@ -110,19 +91,28 @@
         .btn-gold {
             background: linear-gradient(45deg, #daa520, #ffd700, #daa520);
             color: #1a1a1a; transition: transform 0.2s; border: none;
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.4);
         }
         .btn-gold:active { transform: scale(0.95); }
 
+        /* تفاعل الكروت */
         .gift-card {
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
             border: 1px solid rgba(218, 165, 32, 0.4);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
-        .gift-card:hover { border-color: #ffd700; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        .gift-card:active { transform: scale(0.95); background: rgba(218, 165, 32, 0.2); }
 
-        /* Certificate Style */
+        /* أنيميشن */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        
+        /* تنسيق الشهادة */
         .certificate-border {
             border: 4px double #daa520;
             background: #fffaf0;
@@ -137,76 +127,67 @@
         .c-br { bottom: 5px; right: 5px; transform: rotate(180deg); }
         .c-bl { bottom: 5px; left: 5px; transform: rotate(270deg); }
 
+        /* Modal Animation */
         .modal-fade { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
-<body class="text-white min-h-screen flex flex-col items-center relative overflow-x-hidden">
+<body class="text-white min-h-screen flex items-center justify-center relative">
 
-    <!-- طبقة الخلفية الثابتة -->
-    <div class="bg-image"></div>
-    <div class="bg-overlay"></div>
+    <!-- الخلفية الثابتة (الحل الجذري) -->
+    <div id="fixed-background"></div>
+    <div id="bg-overlay"></div>
 
-    <!-- Entrance Overlay (شاشة البداية) -->
-    <div id="entrance-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-1000 bg-image-overlay px-4">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div> 
+    <!-- Entrance Overlay (شاشة البداية الأصلية) -->
+    <div id="entrance-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-1000 px-4" style="background-image: url('https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-black/60"></div> 
         <div class="text-center w-full max-w-md relative z-50">
-            <div class="mb-4 md:mb-6 text-5xl md:text-6xl animate-bounce">🎂</div>
-            <h1 class="text-3xl md:text-5xl font-bold mb-4 md:mb-8 text-yellow-400 font-serif text-shadow leading-tight">عيد ميلاد الأب الغالي</h1>
-            <button onclick="startParty()" class="btn-gold font-bold py-3 px-8 md:py-4 md:px-12 rounded-full text-lg md:text-xl shadow-xl animate-pulse cursor-pointer w-full md:w-auto">
+            <div class="mb-6 text-6xl animate-bounce">🎂</div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-yellow-400 font-serif text-shadow leading-tight">عيد ميلاد الأب الغالي</h1>
+            <button onclick="startParty()" class="btn-gold font-bold py-4 px-12 rounded-full text-xl shadow-xl animate-pulse cursor-pointer w-full md:w-auto">
                 اضغط هنا للاحتفال
             </button>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main id="main-content" class="container mx-auto px-4 py-8 hidden opacity-0 transition-opacity duration-1000 ease-in max-w-5xl relative z-10 w-full">
+    <!-- المحتوى الرئيسي (التصميم الأصلي) -->
+    <main id="main-content" class="container mx-auto px-4 py-8 hidden opacity-0 transition-opacity duration-1000 ease-in max-w-5xl relative z-10 pb-16">
         
         <!-- Header -->
-        <header class="text-center mb-8 md:mb-12 mt-4 relative z-10">
+        <header class="text-center mb-12 mt-4 relative z-10">
             <div class="mb-4 animate-float">
-                <div class="name-badge transform hover:scale-105 transition-transform duration-300">
-                    <h2 class="text-4xl md:text-6xl font-bold golden-text tracking-wider leading-tight">
+                <div class="name-badge transform">
+                    <h2 class="text-5xl md:text-6xl font-bold golden-text tracking-wider leading-tight">
                         بابا حسام
                     </h2>
                 </div>
             </div>
-            <h1 class="text-xl md:text-4xl font-bold text-white mb-2 font-serif text-shadow">
+            <h1 class="text-2xl md:text-4xl font-bold text-white mb-2 font-serif text-shadow">
                 كل سنة وأنت طيب
             </h1>
-            <p class="text-yellow-200 text-base md:text-lg font-bold text-shadow">يا عمود البيت ونور حياتنا</p>
+            <p class="text-yellow-200 text-lg font-bold text-shadow">يا عمود البيت ونور حياتنا</p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center relative z-10 mb-12">
+        <!-- Video & Text Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center relative z-10 mb-12">
             
             <!-- Video Section -->
             <div class="order-2 md:order-1">
-                <div class="glass-card p-1 md:p-2 rounded-xl">
-                    <!-- 
-                       تعديل الفيديو: 
-                       1. poster: يعرض الصورة فوراً حتى يتم تحميل الفيديو
-                       2. preload="auto": يجبر المتصفح على تحميل الفيديو في الخلفية
-                    -->
+                <div class="glass-card p-2 rounded-xl">
                     <div class="relative rounded-lg overflow-hidden shadow-2xl bg-black border border-yellow-900/50 aspect-video">
-                        <video id="birthdayVideo" 
-                               class="w-full h-full object-cover" 
-                               loop 
-                               playsinline 
-                               preload="auto" 
-                               poster="https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg"
-                               controls>
+                        <!-- إضافة poster لتسريع الظهور -->
+                        <video id="birthdayVideo" class="w-full h-full object-cover" loop playsinline controls preload="metadata" poster="https://raw.githubusercontent.com/shehabt1000-boop/hossam/d78616e958ecc386333dfce1a1eb8028dafa59fa/1768680826316.jpg">
                             <source src="https://raw.githubusercontent.com/shehabt1000-boop/hossam/0876c5255899801c21bb1e9fcf51fe74552dd602/3821c986471d5e87da4ff2bd168dfb9a.mp4" type="video/mp4">
-                            متصفحك لا يدعم تشغيل الفيديو.
                         </video>
                     </div>
                 </div>
             </div>
 
-            <!-- Wishes Section -->
-            <div class="order-1 md:order-2 text-center md:text-right space-y-4 md:space-y-6">
-                <div class="glass-card p-5 md:p-8 rounded-xl relative overflow-hidden">
+            <!-- Text Section -->
+            <div class="order-1 md:order-2 text-center md:text-right space-y-6">
+                <div class="glass-card p-6 md:p-8 rounded-xl relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
-                    <p class="text-base md:text-xl leading-loose text-gray-100 font-serif drop-shadow-md font-medium">
+                    <p class="text-lg md:text-xl leading-loose text-gray-100 font-serif drop-shadow-md font-medium">
                         إلى أغلى أب في الدنيا،
                         <br><br class="hidden md:block">
                         وجودك هو الأمان، وضحكتك هي الفرحة لبيتنا. شكراً لكل لحظة تعب وعطاء قدمتها لنا.
@@ -214,21 +195,21 @@
                         ربنا يبارك في عمرك وصحتك، وتفضل دايماً منور حياتنا يا أحن أب.
                     </p>
                 </div>
-                <!-- Signatures -->
-                <div class="mt-6 md:mt-8 pt-4 md:pt-6">
-                    <p class="text-base md:text-lg text-yellow-400 mb-3 md:mb-4 font-bold text-shadow">بكل حب، عائلتك:</p>
-                    <div class="flex flex-wrap justify-center md:justify-start gap-2 md:gap-3">
-                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">آية</span>
-                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">ريم</span>
-                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">أحمد</span>
-                        <span class="bg-black/60 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-yellow-500/50 text-yellow-100 text-sm md:text-base shadow-md backdrop-blur-sm">زوجتك المحبة</span>
+                <!-- التوقيعات -->
+                <div class="mt-8 pt-6">
+                    <p class="text-lg text-yellow-400 mb-4 font-bold text-shadow">بكل حب، عائلتك:</p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                        <span class="bg-black/60 px-4 py-2 rounded-lg border border-yellow-500/50 text-yellow-100 shadow-md backdrop-blur-sm">آية</span>
+                        <span class="bg-black/60 px-4 py-2 rounded-lg border border-yellow-500/50 text-yellow-100 shadow-md backdrop-blur-sm">ريم</span>
+                        <span class="bg-black/60 px-4 py-2 rounded-lg border border-yellow-500/50 text-yellow-100 shadow-md backdrop-blur-sm">أحمد</span>
+                        <span class="bg-black/60 px-4 py-2 rounded-lg border border-yellow-500/50 text-yellow-100 shadow-md backdrop-blur-sm">زوجتك المحبة</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Interactive Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-8 pb-12">
+        <!-- الكروت التفاعلية الثلاثة (الأصلية) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div onclick="openModal(1)" class="gift-card p-6 rounded-xl text-center group">
                 <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">❤️</div>
                 <h3 class="text-xl font-bold text-yellow-400 mb-1">كلمة من القلب</h3>
@@ -245,15 +226,42 @@
                 <p class="text-xs text-yellow-200">خاصة جداً من العائلة</p>
             </div>
         </div>
+
     </main>
 
-    <!-- Modal -->
+    <!-- Modal Popup Container -->
     <div id="msg-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
-        <div id="modal-content-box" class="relative z-[101] max-w-lg w-full modal-fade"></div>
+        <div id="modal-content-box" class="relative z-[101] max-w-lg w-full modal-fade">
+            <!-- Content will be injected here -->
+        </div>
     </div>
     
     <script>
+        // دالة تشغيل القصاصات (المدفع)
+        function fireConfettiBurst() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#FFD700', '#FFA500', '#ffffff']
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#FFD700', '#C0C0C0', '#ffffff']
+                }));
+            }, 250);
+        }
+
+        // محتوى النوافذ المنبثقة (الأصلي)
         const contentData = {
             1: `
                 <div class="bg-gray-900 border border-yellow-600 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden">
@@ -264,7 +272,7 @@
                         أنت لست مجرد أب، أنت الصديق والمرشد.<br>
                         وجودك في حياتنا هو النعمة التي نشكر الله عليها كل يوم.
                     </p>
-                    <button onclick="closeModal()" class="mt-6 text-yellow-500 hover:text-white underline font-bold">إغلاق</button>
+                    <button onclick="closeModal()" class="mt-6 text-yellow-500 hover:text-white underline font-bold px-4 py-2 border border-yellow-500 rounded">إغلاق</button>
                 </div>
             `,
             2: `
@@ -276,7 +284,7 @@
                         شكراً لأنك تفني عمرك لترانا سعداء.<br>
                         كلمات الدنيا لا توفيك حقك يا "بابا حسام".
                     </p>
-                    <button onclick="closeModal()" class="mt-6 text-yellow-500 hover:text-white underline font-bold">إغلاق</button>
+                    <button onclick="closeModal()" class="mt-6 text-yellow-500 hover:text-white underline font-bold px-4 py-2 border border-yellow-500 rounded">إغلاق</button>
                 </div>
             `,
             3: `
@@ -301,7 +309,7 @@
                             <div class="text-center"><p class="text-xs text-gray-500">التوقيع</p><p class="font-bold text-gray-700 font-serif text-lg">عائلتك المحبة</p></div>
                         </div>
                     </div>
-                    <button onclick="closeModal()" class="block w-full mt-2 text-center text-yellow-800 text-sm hover:font-bold">إغلاق الشهادة</button>
+                    <button onclick="closeModal()" class="block w-full mt-2 text-center text-yellow-800 text-sm hover:font-bold py-2 bg-yellow-100 rounded">إغلاق الشهادة</button>
                 </div>
             `
         };
@@ -312,26 +320,16 @@
             contentBox.innerHTML = contentData[id];
             modal.classList.remove('hidden');
             if(id === 3) {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#daa520'] });
+                // إطلاق القصاصات عند فتح الشهادة
+                confetti({
+                    particleCount: 150, spread: 70, origin: { y: 0.6 },
+                    colors: ['#FFD700', '#daa520'], zIndex: 9999
+                });
             }
         }
-        function closeModal() { document.getElementById('msg-modal').classList.add('hidden'); }
 
-        const isMobile = window.innerWidth < 768;
-        const particleCountBase = isMobile ? 30 : 60;
-
-        function fireConfetti() {
-            var duration = 3 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100, disableForReducedMotion: true };
-            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) return clearInterval(interval);
-                var particleCount = particleCountBase * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }, colors: ['#FFD700', '#FFA500', '#ffffff'] }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }, colors: ['#FFD700', '#C0C0C0', '#ffffff'] }));
-            }, 250);
+        function closeModal() {
+            document.getElementById('msg-modal').classList.add('hidden');
         }
 
         function startParty() {
@@ -341,7 +339,7 @@
             const btn = document.querySelector('#entrance-overlay button');
             
             btn.disabled = true;
-            btn.innerHTML = 'جاري التحضير...';
+            btn.innerHTML = 'جاري التحميل...';
 
             overlay.style.opacity = '0';
             setTimeout(() => {
@@ -353,28 +351,26 @@
                 // محاولة تشغيل الفيديو
                 var playPromise = video.play();
                 if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        // بدأ التشغيل بنجاح
-                    }).catch(error => {
-                        console.log("Auto-play prevented by browser policy");
-                        video.muted = true; // المحاولة بوضع الصامت إذا فشل الصوت
+                    playPromise.then(_ => {}).catch(error => {
+                        console.log("Autoplay prevented");
+                        video.muted = true; 
                         video.play();
                     });
                 }
                 
-                fireConfetti();
+                // إطلاق مدفع القصاصات
+                fireConfettiBurst();
+                
+                // تشغيل القصاصات بشكل متكرر وخفيف كل 5 ثواني
                 setInterval(() => {
                     if (document.hidden) return;
-                    confetti({ particleCount: isMobile ? 40 : 80, spread: 80, origin: { y: 0.6 }, colors: ['#FFD700', '#ffffff'], zIndex: 100, disableForReducedMotion: true });
+                    confetti({
+                        particleCount: 40, spread: 80, origin: { y: 0.6 },
+                        colors: ['#FFD700', '#ffffff'], zIndex: 50, disableForReducedMotion: true
+                    });
                 }, 5000);
             }, 800);
         }
-
-        // Preload video logic
-        window.addEventListener('load', function() {
-            const video = document.getElementById('birthdayVideo');
-            if(video) video.load(); 
-        });
     </script>
 </body>
 </html>
